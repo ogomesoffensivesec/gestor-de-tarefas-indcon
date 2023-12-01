@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ErrorPage = () => {
@@ -8,7 +8,7 @@ const ErrorPage = () => {
 
 	const [count, setCount] = useState(5);
 
-	const counter = () => {
+	const counter = useCallback(() => {
 		if (count === 0) {
 			document.title = "Redirecionando...";
 			setTimeout(() => {
@@ -16,15 +16,18 @@ const ErrorPage = () => {
 				navigation("/");
 			}, 2000);
 		} else {
-			setCount(count - 1);
+			setCount((prevCount) => prevCount - 1);
 		}
-	};
+	}, [count, navigation]);
 
 	useEffect(() => {
-		setTimeout(() => {
+		const timer = setTimeout(() => {
 			counter();
 		}, 1000);
-	}, [count]);
+
+		return () => clearTimeout(timer);
+	}, [counter]);
+
 	return (
 		<Box
 			sx={{

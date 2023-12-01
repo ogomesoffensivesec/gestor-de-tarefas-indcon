@@ -1,5 +1,6 @@
-import { Container, Grid, Box } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const itemStyle = {
 	width: "auto",
@@ -14,6 +15,7 @@ const itemStyle = {
 	color: "white",
 	fontWeight: "700",
 	textAlign: "center",
+	textDecoration: "none",
 	fontSize: "20px",
 	transition: ".4s ease all",
 	"&:hover": {
@@ -24,11 +26,13 @@ const options = [
 	{
 		option_name: "Destaques",
 		option_id: 1,
+		link: "/painel-de-imoveis/area-do-corretor/destaques",
 	},
 
 	{
 		option_name: "Corretores",
 		option_id: 3,
+		link: "/painel-de-imoveis/area-do-corretor/destaques",
 	},
 ];
 
@@ -46,7 +50,11 @@ const AreaDoCorretor = () => {
 				}}
 			>
 				{options &&
-					options.map((op) => <Box sx={itemStyle}>{op.option_name}</Box>)}
+					options.map((op) => (
+						<Box sx={itemStyle} component={Link} to={op.link}>
+							{op.option_name}
+						</Box>
+					))}
 			</Box>
 		</Container>
 	);

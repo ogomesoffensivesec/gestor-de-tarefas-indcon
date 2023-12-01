@@ -14,6 +14,7 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
 import ErrorPage from "./pages/ErrorPage";
 import AreaDoCorretor from "./pages/AreaDoCorretor";
+import Destaques from "./pages/Destaques";
 
 const App = () => {
 	const router = createBrowserRouter([
@@ -63,6 +64,14 @@ const App = () => {
 			element: (
 				<ProtectedRoute>
 					<AreaDoCorretor />
+				</ProtectedRoute>
+			),
+		},
+		{
+			path: "/painel-de-imoveis/area-do-corretor/destaques",
+			element: (
+				<ProtectedRoute>
+					<Destaques />
 				</ProtectedRoute>
 			),
 		},

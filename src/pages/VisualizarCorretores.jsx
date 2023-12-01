@@ -151,14 +151,14 @@ const VisualizarCorretores = () => {
 									.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
 									.map((row, index) => (
 										<TableRow key={index}>
-											<TableCell>{row["NOME COMPLETO"]}</TableCell>
-											<TableCell>{row["EMAIL"]}</TableCell>
-											<TableCell>{row["WHATSAPP"]}</TableCell>
+											<TableCell>{row["Nome completo"]}</TableCell>
+											<TableCell>{row["Email"]}</TableCell>
+											<TableCell>{row["Telefone"]}</TableCell>
 											<TableCell>
 												<IconButton
 													aria-label='Abrir WhatsApp'
 													onClick={() =>
-														abrirWhatsApp(row["WHATSAPP"])
+														abrirWhatsApp(row["Telefone"])
 													}
 												>
 													<WhatsAppIcon color='success' />

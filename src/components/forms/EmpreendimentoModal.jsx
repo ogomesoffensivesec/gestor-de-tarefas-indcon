@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
 	Modal,
-	Backdrop,
 	Fade,
 	Typography,
 	Paper,
@@ -28,7 +27,6 @@ import {
 	ref as refStorage,
 	uploadBytes,
 	getDownloadURL,
-	uploadBytesResumable,
 } from "firebase/storage";
 
 function FormularioDocumentosImovel({ formulario, setFormulario }) {
@@ -184,21 +182,18 @@ const EmpreendimentoModal = ({
 	});
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const itemsPerPage = 5;
-	const [currentSection, setCurrentSection] = useState([
+	const itemsPerPage = 15;
+	const currentSection = [
 		{
 			id: 0,
 			section: "Informações",
 		},
-		{
-			id: 1,
-			section: "Modelos",
-		},
+
 		{
 			id: 2,
 			section: "Galeria",
 		},
-	]);
+	];
 
 	const [selectedSection, setSelectedSection] = useState(0);
 
@@ -210,12 +205,11 @@ const EmpreendimentoModal = ({
 	const endIndex = startIndex + itemsPerPage;
 
 	const startIndex2 = (currentPage - 1) * 8;
-	const endIndex2 = startIndex + 8;
+	const endIndex2 = startIndex + 10;
 
 	const [empresas, setEmpresas] = useState([]);
 
 	useEffect(() => {
-		console.log(empreendimento);
 		const empresasREF = ref(
 			database,
 			"hub-indcon/painel-administrativo/empresas"
@@ -229,6 +223,7 @@ const EmpreendimentoModal = ({
 			}
 		});
 	}, []);
+
 	const [carregando, setCarregando] = useState(false);
 	const salvarAlteracoes = async () => {
 		setCarregando(true);
@@ -244,33 +239,32 @@ const EmpreendimentoModal = ({
 						storage,
 						`documentos/${empreendimento.uid}/${documento.nome}`
 					);
-					const uploadTask = await uploadBytes(fileRef, documento.arquivo);
+					await uploadBytes(fileRef, documento.arquivo);
 
 					const downloadURL = await getDownloadURL(fileRef);
 					documento.arquivoURL = downloadURL;
 				}
 			}
 
+			const documentosAtualizados = [];
 			for (const documento of novosDocumentos.documentos) {
-				setEditedEmpreendimento({
-					...editedEmpreendimento,
-					documentos: [...editedEmpreendimento.documentos, documento],
-				});
-				setSelectedEmpreendimento({
-					...empreendimento,
-					documentos: [...empreendimento.documentos, documento],
-				});
+				documentosAtualizados.push(documento);
 			}
 
-			const empreendimentoAtualizado = editedEmpreendimento;
+			const empreendimentoAtualizado = {
+				...editedEmpreendimento,
+				documentos: [
+					...editedEmpreendimento.documentos,
+					...documentosAtualizados,
+				],
+			};
 
 			await set(referenciaEmpreendimento, empreendimentoAtualizado);
-
+			setSelectedEmpreendimento(empreendimentoAtualizado);
 			setEditedEmpreendimento({ ...empreendimento });
 			setNovosDocumentos({ documentos: [] });
 			setIsEditMode(false);
 			setCarregando(false);
-			console.log(editedEmpreendimento);
 		} catch (error) {
 			console.error(error);
 			setCarregando(false);
@@ -297,6 +291,11 @@ const EmpreendimentoModal = ({
 				}
 			}
 
+			// Verifica se a propriedade galeria existe em empreendimento e cria se não existir
+			if (!empreendimento.hasOwnProperty("galeria")) {
+				empreendimento.galeria = [];
+			}
+
 			// Atualiza a lista de imagens na galeria local
 			const novaGaleria = [...empreendimento.galeria, ...linksDasImagens];
 
@@ -311,6 +310,7 @@ const EmpreendimentoModal = ({
 			});
 		} catch (error) {
 			console.error(error.message);
+			console.log("erro@!");
 		}
 	};
 
@@ -380,11 +380,6 @@ const EmpreendimentoModal = ({
 											{isEditMode ? "Salvar" : "Editar"}
 										</Button>
 
-										{selectedSection === 1 && (
-											<>
-												<h1>Modelos</h1>
-											</>
-										)}
 										{selectedSection === 2 && (
 											<>
 												<input
@@ -750,44 +745,49 @@ const EmpreendimentoModal = ({
 								</div>
 							</>
 						)}
+
 						{selectedSection === 2 && (
 							<>
 								<AccordionDetails>
-									{empreendimento.galeria && empreendimento.galeria.length > 0 && (
-										<React.Fragment>
-											<Grid container spacing={2}>
-												{empreendimento.galeria
-													.slice(startIndex2, endIndex2) // Paginação
-													.map((documento, index) => (
-														<Grid
-															item
-															key={index}
-															xs={12}
-															sm={6}
-															md={4}
-															lg={3}
-														>
-															<img
-																src={documento.arquivoURL}
-																style={{
-																	width: "100%",
-																	marginBottom: "10px",
-																	borderRadius: "8px",
-																}}
-															/>
-														</Grid>
-													))}
-											</Grid>
-											<Pagination
-												sx={{
-													bottom: "1px",
-												}}
-												totalItems={empreendimento.galeria.length}
-												currentPage={currentPage}
-												paginate={handlePageChange}
-											/>
-										</React.Fragment>
-									)}
+									{empreendimento.galeria &&
+										empreendimento.galeria.length > 0 && (
+											<React.Fragment>
+												<Grid container spacing={2}>
+													{empreendimento.galeria
+														.slice(startIndex2, endIndex2) // Paginação
+														.map((documento, index) => (
+															<Grid
+																item
+																key={index}
+																xs={12}
+																sm={6}
+																md={4}
+																lg={3}
+															>
+																<img
+																	alt='documento'
+																	src={documento.url}
+																	style={{
+																		width: "100%",
+																		marginBottom: "10px",
+																		borderRadius: "8px",
+																	}}
+																/>
+															</Grid>
+														))}
+												</Grid>
+												<Pagination
+													sx={{
+														bottom: "1px",
+													}}
+													totalItems={
+														empreendimento.galeria.length
+													}
+													currentPage={currentPage}
+													paginate={handlePageChange}
+												/>
+											</React.Fragment>
+										)}
 								</AccordionDetails>
 							</>
 						)}

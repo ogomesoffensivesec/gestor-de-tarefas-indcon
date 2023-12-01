@@ -64,7 +64,6 @@ function FormularioModelos({ formulario, setFormulario }) {
 		id: "",
 		nome: "",
 		tipoEmpreendimento: "Apartamento",
-		quantidadeCozinhas: "",
 	});
 
 	const adicionarCampoAoFormulario = (campo, valor) => {
@@ -169,9 +168,9 @@ function FormularioModelos({ formulario, setFormulario }) {
 						<Grid item xs={6}>
 							<TextField
 								type='number'
-								label='Cozinhas'
-								value={modelo.quantidadeCozinhas}
-								onChange={alterarCampos("quantidadeCozinhas")}
+								label='Lavabo (s)'
+								value={modelo.lavabos}
+								onChange={alterarCampos("lavabos")}
 								fullWidth
 							/>
 						</Grid>
@@ -532,22 +531,7 @@ export default function CadastroEmpreendimento() {
 
 	const [carregando, setCarregando] = useState(false);
 
-	const [isValidDocumento, setIsValidDocumento] = useState(true);
-
-	const validarDocumento = (value) => {
-		const numericValue = value.replace(/\D/g, "");
-
-		if (
-			(numericValue.length === 11 && /^\d{11}$/.test(numericValue)) ||
-			(numericValue.length === 14 && /^\d{14}$/.test(numericValue))
-		) {
-			setIsValidDocumento(true);
-		} else {
-			setIsValidDocumento(false);
-		}
-	};
-
-	const alterarCampos = (fieldPath, empresaSelecionada) => (event) => {
+	const alterarCampos = (fieldPath) => (event) => {
 		const fieldPathArray = fieldPath.split(".");
 		let updatedValue = event.target.value;
 		let updatedFormulario = { ...formulario };
@@ -563,7 +547,7 @@ export default function CadastroEmpreendimento() {
 	};
 
 	const handleNext = () => {
-		if (validarCampos(etapaAtual) && isValidDocumento) {
+		if (validarCampos(etapaAtual)) {
 			setEtapaAtual((prevEtapaAtual) => prevEtapaAtual + 1);
 		} else {
 			console.log("Preencha todos os campos obrigatórios.");
@@ -593,7 +577,7 @@ export default function CadastroEmpreendimento() {
 						storage,
 						`documentos/${uid}/${documento.nome}`
 					);
-					const uploadTask = await uploadBytes(fileRef, documento.arquivo);
+					await uploadBytes(fileRef, documento.arquivo);
 
 					const downloadURL = await getDownloadURL(fileRef);
 					documento.arquivoURL = downloadURL;

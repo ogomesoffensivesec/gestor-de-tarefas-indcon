@@ -249,6 +249,7 @@ function EmpreendimentoInfo({
 							{selectedDocumento.arquivo.type ===
 								"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && (
 								<iframe
+									title='Documento'
 									src={`https://view.officeapps.live.com/op/view.aspx?src=${selectedDocumento.arquivo.url}`}
 									width='100%'
 									height='500'

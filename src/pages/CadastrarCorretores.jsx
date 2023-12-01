@@ -14,13 +14,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { database } from "../firebase/firebase";
-import { ref, push } from "firebase/database";
+import { ref, set } from "firebase/database";
 import * as XLSX from "xlsx";
 
 const CadastrarCorretores = () => {
 	const [file, setFile] = useState(null);
 	const [data, setData] = useState([]);
-	const [message, setMessage] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -32,7 +31,6 @@ const CadastrarCorretores = () => {
 	};
 
 	const lerPlanilha = async () => {
-		setMessage(true);
 		if (file) {
 			const reader = new FileReader();
 			reader.onload = (e) => {
@@ -63,10 +61,7 @@ const CadastrarCorretores = () => {
 			);
 
 			try {
-				for (const item of data) {
-					console.log(item);
-					await push(dbRef, item);
-				}
+				await set(dbRef, data);
 
 				setSnackbarMessage("Planilha cadastrada com sucesso");
 				setSnackbarOpen(true);

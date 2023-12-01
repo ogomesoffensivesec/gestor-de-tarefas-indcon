@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -7,8 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import { CloudUpload } from "@mui/icons-material";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import { ref, onValue, set } from "firebase/database";
-import { database, storage } from "../firebase/firebase";
+import { storage } from "../firebase/firebase";
 
 import {
 	ref as refStorage,
@@ -30,7 +29,6 @@ const GaleriaUpload = ({
 	empreendimentoID,
 	setNoPictures,
 }) => {
-	const [carregando, setCarregando] = useState(false);
 	const enviarImagensDatabase = async () => {
 		try {
 			// Array para armazenar os links das imagens
@@ -170,6 +168,7 @@ const GaleriaUpload = ({
 											<img
 												src={URL.createObjectURL(image)}
 												alt={`Image ${index}`}
+												aria-hidden='true'
 											/>
 										) : (
 											<CircularProgress color='primary' />
